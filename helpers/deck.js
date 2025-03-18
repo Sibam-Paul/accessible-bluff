@@ -23,26 +23,23 @@ class Deck {
   }
   shuffle() {
     for (let i = this.numberOfCards - 1; i > 0; i--) {
-      const newIndex = Math.floor(Math.random() * (i + 1))
-      const oldValue = this.cards[newIndex]
-      this.cards[newIndex] = this.cards[i]
-      this.cards[i] = oldValue
+      const newIndex = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[newIndex]] = [this.cards[newIndex], this.cards[i]];
     }
   }
 }
+
 class Card {
   constructor(suit, value) {
     this.suit = suit
     this.value = value
   }
 }
+
 function freshDeck() {
   return SUITS.flatMap(suit => {
-    return VALUES.map(value => {
-      return new Card(suit, value)
-    })
-  })
+    return VALUES.map(value => new Card(suit, value));
+  });
 }
-//module.exports=Deck;
-exports.Card = Card;
-exports.Deck = Deck;
+
+export { Card, Deck };
