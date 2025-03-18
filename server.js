@@ -3,7 +3,6 @@ import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
-import hbs from "hbs";
 import { v4 as uuidv4 } from "uuid";
 import * as Deck from "./helpers/deck.js";
 import serverfn from "./helpers/ServerFunctions.js";
@@ -213,7 +212,7 @@ io.on('connection', (socket) => {
     console.log("the room count is:", rcount)
     if (roomCounts[roomId] <= 0) {
       delete roomCounts[roomId]; // Remove the room if there are no more users
-      console.log("room ented")
+      console.log("room removed")
     }
   })
 });
