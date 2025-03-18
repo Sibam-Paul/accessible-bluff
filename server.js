@@ -5,6 +5,7 @@ var io = require("socket.io")(http)
 var serverfn = require('./helpers/ServerFunctions')
 var path = require('path');
 const hbs = require('hbs');
+const PORT=3000;
 // Set up the view engine to use HBS
 app.set('view engine', 'hbs');
 // Set the location of the views directory
@@ -234,7 +235,7 @@ function changeTurn(roomId) {
   }
 }
 
-http.listen(3000, () => {
-  console.log("connected to server");
+http.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 }
 )
