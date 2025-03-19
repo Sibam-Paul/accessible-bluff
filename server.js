@@ -1,25 +1,37 @@
-var express = require("express");
-var app = express()
-var http = require("http").createServer(app)
-var io = require("socket.io")(http)
-var serverfn = require('./helpers/ServerFunctions')
-var path = require('path');
-const hbs = require('hbs');
+import express from "express";
+import { createServer } from "http";
+import { Server as SocketIOServer } from "socket.io";
+import path from "path";
+import { fileURLToPath } from "url";
+import { v4 as uuidv4 } from "uuid";
+import * as Deck from "./helpers/deck.js";
+import serverfn from "./helpers/ServerFunctions.js";
+import { TIMEOUT } from "dns";
+
+// Set __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = 3000;
+const app = express();
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer);
+
 // Set up the view engine to use HBS
-app.set('view engine', 'hbs');
+app.set("view engine", "hbs");
 // Set the location of the views directory
-app.set('views', __dirname + '/views');
-app.use(express.static(path.join(__dirname, 'public')));
-var Deck = require('./helpers/deck');
-const { Socket } = require("socket.io");
-const { TIMEOUT } = require("dns");
-var router = express.Router();
-const CardDeck = new Deck.Deck()
-const { v4: uuidv4 } = require('uuid');
-const rooms = {};
-app.get('/', (req, res) => {
-  res.render('game');
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
+
+const router = express.Router();
+const CardDeck = new Deck.Deck();
+
+app.get("/", (req, res) => {
+  res.render("game");
 });
+
+// Room creation and connection management
+var rooms = {};
 var rcount;
 const roomCapacity = 2;//set roomcapacity
 const roomCounts = {}
@@ -72,7 +84,6 @@ io.on('connection', (socket) => {
     setTimeout(() => {
       changeTurn(roomId, io);
     }, 5000);
-
   }
   function executeDuringDelay(roomId) {
     console.log(roomId);
@@ -172,7 +183,6 @@ io.on('connection', (socket) => {
     setTimeout(() => {
       changeTurn(roomId);
     }, 5000);
-
   });
 
   socket.on('CTOS-PASS', (pos) => {
@@ -190,8 +200,7 @@ io.on('connection', (socket) => {
         rooms[roomId].currentTurnIndex = pos;
         changeTurn(roomId);
       }, 5000);
-    }
-    else {
+    } else {
       changeTurn(roomId);
     }
   });
@@ -203,7 +212,7 @@ io.on('connection', (socket) => {
     console.log("the room count is:", rcount)
     if (roomCounts[roomId] <= 0) {
       delete roomCounts[roomId]; // Remove the room if there are no more users
-      console.log("room ented")
+      console.log("room removed")
     }
   })
 });
@@ -234,7 +243,6 @@ function changeTurn(roomId) {
   }
 }
 
-http.listen(3000, () => {
-  console.log("connected to server");
-}
-)
+httpServer.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
